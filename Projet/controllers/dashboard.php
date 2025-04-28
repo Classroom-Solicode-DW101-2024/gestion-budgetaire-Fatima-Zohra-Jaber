@@ -44,6 +44,26 @@ function totalCurrentMonth($connection) {
     return $total;   
 }   
 
+function totalLastMonth($connection) {
+    $query = "SELECT SUM(t.montant) AS total, c.type FROM transactions t JOIN categories c
+              ON t.category_id = c.id WHERE t.user_id = :userId
+              AND MONTH(t.date_transaction) = MONTH(CURRENT_DATE) - 1
+              AND YEAR(t.date_transaction) = YEAR(CURRENT_DATE)
+              GROUP BY c.type";
+    $stmt = $connection->prepare($query);
+    $stmt->bindParam(':userId', $_SESSION['user']['id'], PDO::PARAM_INT);
+    $stmt->execute();
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $total = ['revenu' => 0, 'depense' => 0];
+
+    foreach ($result as $row) {
+        if ($row['type'] === 'revenu' || $row['type'] === 'depense') {
+            $total[$row['type']] = (float) $row['total'];
+        }
+    }
+
+    return $total;   
+}
 
 
 
@@ -77,3 +97,23 @@ function totalExpensesByCategory($category,$connection) {
         return 0; 
     }
 }
+function maxCurrentMonth($connection) {
+    $query = "SELECT MAX(t.montant) AS total, c.type FROM transactions t JOIN categories c
+              ON t.category_id = c.id WHERE t.user_id = :userId
+              AND MONTH(t.date_transaction) = MONTH(CURRENT_DATE)
+              AND YEAR(t.date_transaction) = YEAR(CURRENT_DATE)
+              GROUP BY c.type";
+    $stmt = $connection->prepare($query);
+    $stmt->bindParam(':userId', $_SESSION['user']['id'], PDO::PARAM_INT);
+    $stmt->execute();
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $max = ['revenu' => 0, 'depense' => 0];
+
+    foreach ($result as $row) {
+        if ($row['type'] === 'revenu' || $row['type'] === 'depense') {
+            $max[$row['type']] = (float) $row['total'];
+        }
+    }
+
+    return $max;   
+}  

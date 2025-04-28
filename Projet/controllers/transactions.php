@@ -36,7 +36,7 @@ function editTransaction($idTransaction,$newTransaction,$connection) {
     return $stmt->rowCount() > 0; // Return true if a row was updated, false otherwise
 }
 function listTransactions($connection) {
-    $query = "SELECT t.montant, t.description, t.date_transaction, c.nom ,c.type
+    $query = "SELECT t.id, t.montant, t.description, t.date_transaction, c.nom ,c.type
               FROM transactions t JOIN categories c ON t.category_id = c.id 
               WHERE t.user_id = :userId ORDER BY date_transaction DESC";
     $stmt = $connection->prepare($query);
@@ -45,7 +45,7 @@ function listTransactions($connection) {
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 function listTransactionsbyMonth($connection,$year,$month) {
-    $query = "SELECT t.montant, t.description, t.date_transaction, c.nom ,c.type
+    $query = "SELECT t.id, t.montant, t.description, t.date_transaction, c.nom ,c.type
               FROM transactions t JOIN categories c ON t.category_id = c.id 
               WHERE t.user_id = :userId AND YEAR(date_transaction) = :year 
               AND MONTH(date_transaction) = :month ORDER BY date_transaction DESC";
