@@ -26,7 +26,7 @@ if (isset($_POST['search'])) {
 if (isset($_POST['add'])) {
     $transaction['montant'] = $_POST['montant'];
     $transaction['description'] = $_POST['description'];
-    $transaction['date_transaction'] = $_POST['date_transaction'];
+    $transaction['date'] = $_POST['date'];
     $transaction['category_id'] = $_POST['category_id'];
     addTransaction($transaction, $conn);
 }
@@ -35,7 +35,7 @@ if (isset($_POST['edit'])) {
     $idTransaction = $_POST['transaction_id'];
     $newTransaction['montant'] = $_POST['montant'];
     $newTransaction['description'] = $_POST['description'];
-    $newTransaction['date_transaction'] = $_POST['date_transaction'];
+    $newTransaction['date'] = $_POST['date'];
     $newTransaction['category_id'] = $_POST['category_id'];
     editTransaction($idTransaction, $newTransaction, $conn);
 }
@@ -75,7 +75,7 @@ if (isset($_POST['delete'])) {
                 </button>
             </form>
 
-            <button onclick='openAddModal()' class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-300">
+            <button onclick='openAddEditModal("add")' class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-300">
                 Ajouter Transaction
             </button>
 
@@ -108,7 +108,7 @@ if (isset($_POST['delete'])) {
                                 <?php endif; ?>
                                 <td class="py-3 px-6 text-left">
                                     <div class="flex item-center justify-center">
-                                        <button onclick='openEditModal(<?= json_encode($transaction, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>)' class="w-4 transform hover:text-blue-500 hover:scale-110">
+                                        <button onclick='openAddEditModal("edit", <?= json_encode($transaction, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>)' class="w-4 transform hover:text-blue-500 hover:scale-110">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                                             </svg>
@@ -128,62 +128,37 @@ if (isset($_POST['delete'])) {
             </div>
         <?php endif ?>
 
-        <!-- Modal Ajouter -->
-        <div id="addModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 hidden">
+        <!-- Modal Ajouter / Modifier -->
+        <div id="addEditModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 hidden">
             <div class="bg-white rounded-lg w-full max-w-md p-6">
-                <h2 class="text-xl font-semibold mb-4">Ajouter la transaction</h2>
-                <form action="" method="POST" class="space-y-4">
+                <h2 class="text-xl font-semibold mb-4" id="titre"></h2>
+                <form action="" method="POST" class="space-y-2">
 
-                    <div class="inline-flex border border-primary rounded-full overflow-hidden text-sm">
-                        <label class="px-6 py-2 font-medium cursor-pointer transition-colors <?= $typeSelected === 'revenu' ? 'bg-blue-500 text-white' : 'hover:bg-blue-100' ?>">
-                            <input type="radio" name="type" value="revenu" class="hidden" <?= $typeSelected === 'revenu' ? 'checked' : '' ?>> Revenu
+                    <input type="hidden" name="transaction_id" id="transaction_id">
+                    <div id="type-switch" class="inline-flex border border-primary rounded-full overflow-hidden text-sm">
+                        <label class="px-6 py-2 font-medium cursor-pointer transition-colors" data-type="revenu">
+                            <input type="radio" name="type" value="revenu" class="hidden"> Revenu
                         </label>
-                        <label class="px-6 py-2 font-medium cursor-pointer transition-colors <?= $typeSelected === 'depense' ? 'bg-blue-500 text-white' : 'hover:bg-blue-100' ?>">
-                            <input type="radio" name="type" value="depense" class="hidden" <?= $typeSelected === 'depense' ? 'checked' : '' ?>> Dépense
+                        <label class="px-6 py-2 font-medium cursor-pointer transition-colors" data-type="depense">
+                            <input type="radio" name="type" value="depense" class="hidden"> Dépense
                         </label>
                     </div>
 
-                    <select name="category_id" id="category_id" class="w-full border p-2 rounded">
-                        <option value="">Sélectionnez un type</option>
+                    <label for="category_id" class="block text-sm font-medium text-gray-600">Catégorie :</label>
+                    <select name="category_id" id="category_id" class="w-full border p-2 rounded ">
 
                     </select>
-                    <input type="number" name="montant" id="edit_montant" class="w-full border p-2 rounded">
-                    <textarea name="description" id="edit_description" class="w-full border p-2 rounded" rows="2"></textarea>
-                    <input type="date" name="date_transaction" id="edit_date" required class="w-full border p-2 rounded">
+                    
+                    <label for="montant" class="block text-sm font-medium text-gray-600">Montant :</label>
+                    <input type="number" name="montant" id="montant" class="w-full border p-2 rounded">
+                    <label for="description" class="block text-sm font-medium text-gray-600">Description :</label>
+                    <textarea name="description" id="description" class="w-full border p-2 rounded" rows="2"></textarea>     
+                    <label for="date" class="block text-sm font-medium text-gray-600">Date :</label>
+                    <input type="date" name="date" id="date" required class="w-full border p-2 rounded">
 
-                    <div class="flex justify-end space-x-2 pt-4 border-t">
-                        <button type="button" onclick="closeModal('addModal')" class="px-4 py-2 text-gray-500 hover:text-red-500">Annuler</button>
-                        <button type="submit" name="add" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Ajouter</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        <!-- Modal Modifier -->
-        <div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 hidden">
-            <div class="bg-white rounded-lg w-full max-w-md p-6">
-                <h2 class="text-xl font-semibold mb-4">Modifier la transaction</h2>
-                <form action="" method="POST" class="space-y-4">
-                    <input type="hidden" name="transaction_id" id="edit_id">
-
-                    <div class="inline-flex border border-primary rounded-full overflow-hidden text-sm">
-                        <label class="px-6 py-2 font-medium cursor-pointer transition-colors <?= $typeSelected === 'revenu' ? 'bg-blue-500 text-white' : 'hover:bg-blue-100' ?>">
-                            <input type="radio" name="type" value="revenu" class="hidden" <?= $typeSelected === 'revenu' ? 'checked' : '' ?>> Revenu
-                        </label>
-                        <label class="px-6 py-2 font-medium cursor-pointer transition-colors <?= $typeSelected === 'depense' ? 'bg-blue-500 text-white' : 'hover:bg-blue-100' ?>">
-                            <input type="radio" name="type" value="depense" class="hidden" <?= $typeSelected === 'depense' ? 'checked' : '' ?>> Dépense
-                        </label>
-                    </div>
-
-                    <select name="category_id" id="edit_category" class="w-full border p-2 rounded">
-                            
-                    </select>
-                    <input type="number" name="montant" id="edit_montant" class="w-full border p-2 rounded">
-                    <textarea name="description" id="edit_description" class="w-full border p-2 rounded" rows="2"></textarea>
-                    <input type="date" name="date_transaction" id="edit_date" required class="w-full border p-2 rounded">
-
-                    <div class="flex justify-end space-x-2 pt-4 border-t">
-                        <button type="button" onclick="closeModal('editModal')" class="px-4 py-2 text-gray-500 hover:text-red-500">Annuler</button>
-                        <button type="submit" name="edit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Modifier</button>
+                    <div class="flex justify-end space-x-2 pt-4">
+                        <button type="button" onclick="closeModal('addEditModal')" class="px-4 py-2 text-gray-500 hover:text-red-500">Annuler</button>
+                        <button type="submit" id="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"></button>
                     </div>
                 </form>
             </div>
@@ -205,17 +180,30 @@ if (isset($_POST['delete'])) {
               $categoriesDepense = listCategories('depense', $conn); ?>
 
         <script>
-            function openAddModal() {
-                document.getElementById('addModal').classList.remove("hidden");
-            }
 
-            function openEditModal(transaction) {
-                document.getElementById('edit_id').value = transaction.id;
-                document.getElementById('edit_montant').value = transaction.montant;
-                document.getElementById('edit_date').value = transaction.date_transaction;
-                document.getElementById('edit_description').value = transaction.description;
-                document.getElementById('edit_category').value = transaction.category_id;
-                document.getElementById('editModal').classList.remove("hidden");
+            function openAddEditModal(action, transaction) {
+                if (action === "add") {
+                    document.getElementById('titre').innerText = "Ajouter la transaction";
+                    document.getElementById('montant').value = '';
+                    document.getElementById('description').value = '';
+                    document.getElementById('date').value = '';
+                    document.getElementById('category_id').value = '';
+                    document.getElementById('submit').innerText = "Ajouter";
+                    document.getElementById('submit').setAttribute('name', 'add'); 
+
+                } else if (action === "edit") {
+                    document.getElementById('titre').innerText = "Modifier la transaction";
+                    document.getElementById('montant').value = transaction.montant;
+                    document.getElementById('description').value = transaction.description;
+                    document.getElementById('date').value = transaction.date_transaction;
+                    document.getElementById('category_id').value = transaction.category_id; 
+                    document.getElementById('transaction_id').value = transaction.id;
+                    document.querySelector(`input[name="type"][value="${transaction.type}"]`).checked = true;
+                    document.getElementById('submit').innerText = "Modifier";
+                    document.getElementById('submit').setAttribute('name', 'edit');
+                }
+                document.getElementById('addEditModal').classList.remove("hidden");
+
             }
 
             function openDeleteModal(idTransaction) {
@@ -228,33 +216,52 @@ if (isset($_POST['delete'])) {
                 document.getElementById(id).classList.add("hidden");
             }
 
-            const categoriesRevenu = <?= json_encode($categoriesRevenu) ?>;
-            const categoriesDepense = <?= json_encode($categoriesDepense) ?>;
-    const typeSelect = document.querySelector('input[name="type"]:checked').value;
-    typeSelect.addEventListener('change', function() {
-        if(typeSelect==='revenu'){
-            categories = categoriesRevenu;
-            
-        }else{
-            categories = categoriesDepense;
-        }
-    console.log(categories);
+    const categoriesRevenu = <?= json_encode($categoriesRevenu) ?>;
+    const categoriesDepense = <?= json_encode($categoriesDepense) ?>;
 
-            const categorySelect = document.getElementById('category_id');
-                categorySelect.innerHTML = ''; // Vider l'ancien contenu
-
-                    categories.forEach(cat => {
-                        const option = document.createElement('option');
-                        option.value = cat.id;
-                        option.textContent = cat.nom;
-                        categorySelect.appendChild(option);
-                    });
-                });
+    console.log(categoriesRevenu);
+    console.log(categoriesDepense);
 
     
-    
+    function updateCategory(type) {
+        const categorySelect = document.getElementById('category_id');
+        categorySelect.innerHTML = '<option value="">Sélectionnez une catégorie</option>';
+
+        const categories = type === 'revenu' ? categoriesRevenu : categoriesDepense;
+
+        categories.forEach(cat => {
+            const option = document.createElement('option');
+            option.value = cat.id;
+            option.textContent = cat.nom;
+            categorySelect.appendChild(option);
+        });
+    }
+
    
-        </script>
+    document.querySelectorAll('#type-switch input[name="type"]').forEach(radio => {
+        radio.addEventListener('change', function () {
+            const selectedType = this.value;
+            updateCategory(selectedType);
+
+            document.querySelectorAll('#type-switch label').forEach((label) => {
+            const isChecked = label.querySelector('input').checked;
+            label.classList.toggle('bg-blue-500', isChecked);
+            label.classList.toggle('text-white', isChecked);
+            label.classList.toggle('hover:bg-blue-100', !isChecked);
+        });
+            
+        });
+    });
+
+  
+    const selectedRadio = document.querySelector('input[name="type"]:checked');
+    if (selectedRadio) {
+        updateCategory(selectedRadio.value);
+    }
+
+
+</script>
+
 
 </body>
 

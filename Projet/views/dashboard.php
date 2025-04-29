@@ -57,7 +57,12 @@
   <div class="bg-white rounded-xl shadow-md p-6 w-72">
     <h2 class="text-sm font-semibold text-gray-500">Total des revenus de la période</h2>
     <p class="text-3xl font-bold text-blue-900 mt-2"><?= number_format($total['revenu'], 2) ?> Dh</p>
-    <?php $perRevenu = number_format(($total['revenu'] - $lastTotal['revenu'])/ $total['revenu'] * 100 , 2);
+    <?php 
+        if ($total['revenu'] != 0) {
+            $perRevenu = number_format(($total['revenu'] - $lastTotal['revenu']) / $total['revenu'] * 100, 2);
+        } else {
+            $perRevenu = 0; 
+        }
         if($perRevenu < 0):
     ?>
     <div class="flex items-center text-sm text-red-500 mt-4 border-t-2 pt-2">
@@ -85,7 +90,12 @@
   <div class="bg-white rounded-xl shadow-md p-6 w-72">
     <h2 class="text-sm font-semibold text-gray-500">Total des dépenses de la période</h2>
     <p class="text-3xl font-bold text-blue-900 mt-2"><?= number_format($total['depense'], 2) ?> Dh</p>
-    <?php $perDepense = number_format(($total['depense'] - $lastTotal['depense']) / $total['depense'] * 100 , 2);
+    <?php
+    if ($total['depense'] != 0) {
+        $perDepense = number_format(($total['depense'] - $lastTotal['depense']) / $total['depense'] * 100, 2);
+    } else {
+        $perDepense = 0; 
+    }
     if($perDepense < 0):
     ?>
     <div class="flex items-center text-sm text-green-500 mt-4 border-t-2 pt-2">

@@ -27,8 +27,8 @@ function editTransaction($idTransaction,$newTransaction,$connection) {
     WHERE id = :idTransaction";
     $stmt = $connection->prepare($sql);
     $stmt->bindParam(':idTransaction', $idTransaction, PDO::PARAM_INT);
-    $stmt->bindParam(':userId', $idTransaction, PDO::PARAM_INT);
-    $stmt->bindParam(':categoryId', $idTransaction, PDO::PARAM_INT);
+    $stmt->bindParam(':userId', $_SESSION['user']['id'], PDO::PARAM_INT);
+    $stmt->bindParam(':categoryId', $newTransaction['category_id'], PDO::PARAM_INT);
     $stmt->bindParam(':montant', $newTransaction['montant'], PDO::PARAM_INT);
     $stmt->bindParam(':description', $newTransaction['description'], PDO::PARAM_STR);
     $stmt->bindParam(':date', $newTransaction['date'], PDO::PARAM_STR);
