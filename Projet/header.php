@@ -1,7 +1,7 @@
 
     <!-- Navbar -->
     <nav x-data="{ open: false }" class="bg-white shadow-md backdrop-blur-lg dark:bg-gray-900 dark:shadow-lg">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:max-w-6xl">
             <div class="relative flex h-20 items-center justify-between">
                 <div class="flex-shrink-0">
                     <a href="../index.php">

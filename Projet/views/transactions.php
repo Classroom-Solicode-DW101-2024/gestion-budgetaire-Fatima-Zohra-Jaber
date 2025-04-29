@@ -56,30 +56,30 @@ if (isset($_POST['delete'])) {
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 </head>
 
-<body class="bg-gray-100">
+<body class="bg-gray-50 min-h-screen font-sans">
     <?php require '../header.php'; ?>
-    <div class="container mx-auto px-4 py-8">
-        <h1 class="text-3xl font-bold text-center mb-8">Historique des Transactions</h1>
 
+    <div class="max-w-6xl mx-auto px-4 py-10">
+            <h1 class="text-3xl font-bold text-gray-800 mb-6">💸 Historique des Transactions</h1>
+  
         <!-- Search and Add Transaction -->
-        <div class="flex flex-col md:flex-row justify-between items-center mb-6">
-            <form method="POST" class="flex items-end gap-4 mb-6">
-                <div>
-                    <label for="periode" class="block text-sm font-medium text-gray-700">Mois & Année</label>
-                    <input type="month" id="periode" name="periode" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+            <form method="POST" class="w-full flex justify-between items-center gap-4 mb-6">
+                <div class="w-full flex w-1/4 md:w-1/3 gap-2">
+                   <input type="month" name="periode" id="periode"
+                        class="w-1/3 md:w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:outline-none focus:ring focus:ring-blue-300"
                         value="<?= $_POST['periode'] ?? date('Y-m') ?>">
+                
+                    <button type="submit" name="search"
+                        class="text-sm md:text-lg bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition">
+                        Rechercher
+                    </button>
                 </div>
-
-                <button type="submit" name="search" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-                    Rechercher
+           
+                <button onclick='openAddEditModal("add")'
+                    class=" text-sm md:text-lg bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition">
+                    + Ajouter
                 </button>
             </form>
-
-            <button onclick='openAddEditModal("add")' class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-300">
-                Ajouter Transaction
-            </button>
-
-        </div>
         <?php if (count($transactions) == 0): ?>
             <p class="text-lg text-center text-gray-600">Vous n’avez aucune transaction.</p>
         <?php else: ?>

@@ -44,17 +44,17 @@
 
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-50">
+<body class="bg-gray-50 min-h-screen font-sans">
     <?php  require '../header.php'; ?>
-<div class="flex flex-wrap justify-center gap-4 p-6 ">
+<div class="flex flex-wrap justify-center gap-10 py-6 px-10 ">
   <!-- Total Balance -->
-  <div class="bg-white rounded-xl shadow-md p-6 w-72">
+  <div class="bg-white rounded-xl shadow-md p-6 w-70">
     <h2 class="text-sm font-semibold text-gray-500">Solde Total</h2>
     <p class="text-3xl font-bold text-blue-900 mt-2"><?= number_format(soldUser($conn), 2) ?> Dh </p>
   </div>
 
   <!-- Total Period Income -->
-  <div class="bg-white rounded-xl shadow-md p-6 w-72">
+  <div class="bg-white rounded-xl shadow-md p-6 w-70">
     <h2 class="text-sm font-semibold text-gray-500">Total des revenus de la période</h2>
     <p class="text-3xl font-bold text-blue-900 mt-2"><?= number_format($total['revenu'], 2) ?> Dh</p>
     <?php 
@@ -87,7 +87,7 @@
   </div>
 
   <!-- Total Period Expenses -->
-  <div class="bg-white rounded-xl shadow-md p-6 w-72">
+  <div class="bg-white rounded-xl shadow-md p-6 w-70">
     <h2 class="text-sm font-semibold text-gray-500">Total des dépenses de la période</h2>
     <p class="text-3xl font-bold text-blue-900 mt-2"><?= number_format($total['depense'], 2) ?> Dh</p>
     <?php
@@ -120,7 +120,7 @@
   </div>
 
   <!-- Max -->
-  <div class="bg-white rounded-xl shadow-md p-6 w-72">
+  <div class="bg-white rounded-xl shadow-md p-6 w-70">
     <h2 class="text-sm font-semibold text-gray-500">Le revenu le plus grand</h2>
     <div class="flex items-center text-sm font-semibold text-green-500 pb-3 mt-1 border-b-2">
         <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
@@ -145,7 +145,7 @@
 </div>
 
 
-<div class="max-w-6xl mx-auto p-6 bg-white rounded-xl shadow-md">
+<div class="max-w-6xl mx-auto mb-4 py-6 px-10 bg-white rounded-xl shadow-md">
     <h3 class="text-xl font-semibold mb-4 text-primary border-b pb-2">Filtrer par catégorie</h3>
     <form method="POST" class="flex flex-wrap gap-10 mx-3">
         <div class="mb-6">
@@ -185,6 +185,5 @@
     </div>
   
 </div>
-    <script src="script.js"></script>
 </body>
 </html>
