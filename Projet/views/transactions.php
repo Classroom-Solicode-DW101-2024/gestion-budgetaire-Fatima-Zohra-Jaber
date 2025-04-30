@@ -8,7 +8,8 @@ if (!isset($_SESSION['user'])) {
     exit;
 }
 
-$transactions = listTransactions($conn);
+$transactions = [];
+$errors = [];
 
 $categoriesRevenu = listCategories('revenu', $conn);
 $categoriesDepense = listCategories('depense', $conn);
@@ -24,21 +25,37 @@ if (isset($_POST['search'])) {
 }
 
 if (isset($_POST['add'])) {
-    $transaction['montant'] = $_POST['montant'];
-    $transaction['description'] = $_POST['description'];
-    $transaction['date'] = $_POST['date'];
-    $transaction['category_id'] = $_POST['category_id'];
-    addTransaction($transaction, $conn);
+    $errors = [];
+    $errors['montant'] = empty($_POST['montant']) ? "Le montant est requis." : '';
+    $errors['date'] = empty($_POST['date']) ? "La date est requise." : '';
+    $errors['category_id'] = empty($_POST['category_id']) ? "La catégorie est requise." : '';
+
+    if (empty($errors)) {
+        $transaction = [
+            'montant' => htmlspecialchars($_POST['montant']),
+            'description' => htmlspecialchars($_POST['description']) ?? '',
+            'date' => htmlspecialchars($_POST['date']),
+            'category_id' => htmlspecialchars($_POST['category_id'])
+        ];
+        addTransaction($transaction, $conn);
+    }
 }
 
 if (isset($_POST['edit'])) {
     $idTransaction = $_POST['transaction_id'];
-    $newTransaction['montant'] = $_POST['montant'];
-    $newTransaction['description'] = $_POST['description'];
-    $newTransaction['date'] = $_POST['date'];
-    $newTransaction['category_id'] = $_POST['category_id'];
-    editTransaction($idTransaction, $newTransaction, $conn);
+    $errors = [];
+    $errors['montant'] = empty($_POST['montant']) ? "Le montant est requis." : '';
+    $errors['date'] = empty($_POST['date']) ? "La date est requise." : '';
+    $errors['category_id'] = empty($_POST['category_id']) ? "La catégorie est requise." : '';
+    if (empty($errors)) {
+        $newTransaction['montant'] = htmlspecialchars($_POST['montant']);
+        $newTransaction['description'] = htmlspecialchars($_POST['description']) ?? '';
+        $newTransaction['date'] = htmlspecialchars($_POST['date']);
+        $newTransaction['category_id'] = htmlspecialchars($_POST['category_id']);
+        editTransaction($idTransaction, $newTransaction, $conn);
+    }
 }
+
 if (isset($_POST['delete'])) {
     $idTransaction = $_POST['transaction_id'];
     deleteTransaction($idTransaction, $conn);
@@ -75,7 +92,7 @@ if (isset($_POST['delete'])) {
                     </button>
                 </div>
            
-                <button onclick='openAddEditModal("add")'
+                <button onclick='openAddEditModal("add", {})' type="button"
                     class=" text-sm md:text-lg bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition">
                     + Ajouter
                 </button>
@@ -154,7 +171,7 @@ if (isset($_POST['delete'])) {
                     <label for="description" class="block text-sm font-medium text-gray-600">Description :</label>
                     <textarea name="description" id="description" class="w-full border p-2 rounded" rows="2"></textarea>     
                     <label for="date" class="block text-sm font-medium text-gray-600">Date :</label>
-                    <input type="date" name="date" id="date" required class="w-full border p-2 rounded">
+                    <input type="date" name="date" id="date" class="w-full border p-2 rounded">
 
                     <div class="flex justify-end space-x-2 pt-4">
                         <button type="button" onclick="closeModal('addEditModal')" class="px-4 py-2 text-gray-500 hover:text-red-500">Annuler</button>
@@ -176,10 +193,35 @@ if (isset($_POST['delete'])) {
                 </form>
             </div>
         </div>
-        <?php $categoriesRevenu = listCategories('revenu', $conn);
-              $categoriesDepense = listCategories('depense', $conn); ?>
 
         <script>
+             const categoriesRevenu = <?= json_encode($categoriesRevenu) ?>;
+             const categoriesDepense = <?= json_encode($categoriesDepense) ?>;
+
+        function updateType() {
+        document.querySelectorAll('#type-switch label').forEach((label) => {
+            const isChecked = label.querySelector('input').checked;
+            label.classList.toggle('bg-blue-500', isChecked);
+            label.classList.toggle('text-white', isChecked);
+            label.classList.toggle('hover:bg-blue-100', !isChecked);
+        });
+    }
+
+    function updateCategory(type, transaction = {}) {
+        const categorySelect = document.getElementById('category_id');
+        categorySelect.innerHTML = '<option value="">Sélectionnez une catégorie</option>';
+        const categories = type === 'revenu' ? categoriesRevenu : categoriesDepense;
+
+        categories.forEach(cat => {
+            const option = document.createElement('option');
+            option.value = cat.id;
+            option.textContent = cat.nom;
+            categorySelect.appendChild(option);
+            if (cat.id === transaction.category_id) {
+                option.selected = true;
+            }
+        });
+    }
 
             function openAddEditModal(action, transaction) {
                 if (action === "add") {
@@ -199,6 +241,8 @@ if (isset($_POST['delete'])) {
                     document.getElementById('category_id').value = transaction.category_id; 
                     document.getElementById('transaction_id').value = transaction.id;
                     document.querySelector(`input[name="type"][value="${transaction.type}"]`).checked = true;
+                    updateType();
+                    updateCategory(transaction.type, transaction);
                     document.getElementById('submit').innerText = "Modifier";
                     document.getElementById('submit').setAttribute('name', 'edit');
                 }
@@ -212,55 +256,27 @@ if (isset($_POST['delete'])) {
                 document.getElementById('deleteModal').classList.remove("hidden");
             }
 
-            function closeModal(id) {
-                document.getElementById(id).classList.add("hidden");
-            }
+    function closeModal(id) {
 
-    const categoriesRevenu = <?= json_encode($categoriesRevenu) ?>;
-    const categoriesDepense = <?= json_encode($categoriesDepense) ?>;
-
-    console.log(categoriesRevenu);
-    console.log(categoriesDepense);
-
-    
-    function updateCategory(type) {
-        const categorySelect = document.getElementById('category_id');
-        categorySelect.innerHTML = '<option value="">Sélectionnez une catégorie</option>';
-
-        const categories = type === 'revenu' ? categoriesRevenu : categoriesDepense;
-
-        categories.forEach(cat => {
-            const option = document.createElement('option');
-            option.value = cat.id;
-            option.textContent = cat.nom;
-            categorySelect.appendChild(option);
-        });
+        
+            document.getElementById(id).classList.add("hidden");
+        
     }
-
    
     document.querySelectorAll('#type-switch input[name="type"]').forEach(radio => {
         radio.addEventListener('change', function () {
             const selectedType = this.value;
-            updateCategory(selectedType);
-
-            document.querySelectorAll('#type-switch label').forEach((label) => {
-            const isChecked = label.querySelector('input').checked;
-            label.classList.toggle('bg-blue-500', isChecked);
-            label.classList.toggle('text-white', isChecked);
-            label.classList.toggle('hover:bg-blue-100', !isChecked);
-        });
-            
+            updateCategory(selectedType);     
         });
     });
 
   
-    const selectedRadio = document.querySelector('input[name="type"]:checked');
-    if (selectedRadio) {
-        updateCategory(selectedRadio.value);
-    }
+    // const selectedRadio = document.querySelector('input[name="type"]:checked');
+    // if (selectedRadio) {
+    //     updateCategory(selectedRadio.value);
+    // }
 
-
-</script>
+   </script>
 
 
 </body>

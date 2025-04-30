@@ -22,12 +22,10 @@ function deleteTransaction($idTransaction,$connection) {
 }
 
 function editTransaction($idTransaction,$newTransaction,$connection) {
-    $sql = "UPDATE transactions SET user_id = :userId, category_id = :categoryId,
-    montant = :montant, description = :description, date_transaction = :date 
-    WHERE id = :idTransaction";
+    $sql = "UPDATE transactions SET  category_id = :categoryId, montant = :montant, description = :description,
+    date_transaction = :date WHERE id = :idTransaction";
     $stmt = $connection->prepare($sql);
     $stmt->bindParam(':idTransaction', $idTransaction, PDO::PARAM_INT);
-    $stmt->bindParam(':userId', $_SESSION['user']['id'], PDO::PARAM_INT);
     $stmt->bindParam(':categoryId', $newTransaction['category_id'], PDO::PARAM_INT);
     $stmt->bindParam(':montant', $newTransaction['montant'], PDO::PARAM_INT);
     $stmt->bindParam(':description', $newTransaction['description'], PDO::PARAM_STR);

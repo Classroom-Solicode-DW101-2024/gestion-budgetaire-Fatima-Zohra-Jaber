@@ -8,7 +8,8 @@
 </head>
 <body class="bg-white text-gray-800 font-sans">
 
-  <!-- En-tête -->
+<div class="h-screen flex flex-col">
+  <!-- Section Header -->
   <header class="bg-blue-700 text-white shadow">
     <div class="container mx-auto px-4 py-4 flex justify-between items-center">
       <img src="images/logo1.png" alt="" class="h-14 w-auto">
@@ -21,27 +22,24 @@
   </header>
 
 
-<!-- Section Hero  -->
-<section class="bg-blue-50 py-20">
-  <div class="container mx-auto px-4 flex flex-col-reverse lg:flex-row items-center justify-between">
-    <!-- Texte -->
-    <div class="lg:w-1/2 text-center lg:text-left mt-10 lg:mt-0">
-      <h2 class="text-4xl font-extrabold text-blue-900 mb-4">Votre budget, simplifié avec <span class="text-blue-600">DigiWallet</span></h2>
-      <p class="text-lg text-blue-800 mb-6">
-        Gardez le contrôle de vos dépenses, suivez vos revenus, et atteignez vos objectifs financiers avec une application moderne et intuitive.
-      </p>
-      <div class="space-x-4">
-        <a href="register.php" class="bg-blue-600 text-white px-6 py-3 rounded shadow hover:bg-blue-700 transition">Créer un compte</a>
+  <!-- Section Hero  -->
+  <section class="bg-blue-100 flex-1">
+    <div class="mx-auto px-4 flex flex-col-reverse lg:flex-row items-center justify-between">
+      <div class="lg:w-1/2 text-center lg:text-left mt-10 lg:mt-0">
+        <h2 class="text-4xl font-extrabold text-blue-900 mb-4">Votre budget, simplifié avec <span class="text-blue-600">DigiWallet</span></h2>
+        <p class="text-lg text-blue-800 mb-6">
+          Gardez le contrôle de vos dépenses, suivez vos revenus, et atteignez vos objectifs financiers avec une application moderne et intuitive.
+        </p>
+        <div class="space-x-4">
+          <a href="../Projet/views/register.php" class="bg-blue-600 text-white px-6 py-3 rounded shadow hover:bg-blue-700 transition">Créer un compte</a>
+        </div>
+      </div>
+      <div class="lg:w-1/2 flex justify-center">
+        <img src="images/bgHero.png" alt="Aperçu DigiWallet" class="max-w-full max-h-[50vh] drop-shadow-xl rounded">
       </div>
     </div>
-
-    <!-- Image de l'application -->
-    <div class="lg:w-1/2 flex justify-center">
-      <img src="bghero.png" alt="Aperçu DigiWallet" class="max-w-full h-auto drop-shadow-xl rounded">
-    </div>
-  </div>
-</section>
-
+  </section>  
+</div>
   <!-- Fonctionnalités -->
   <section id="features" class="py-16 bg-white">
     <div class="container mx-auto px-4">
